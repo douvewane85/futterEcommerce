@@ -4,6 +4,7 @@
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application
+    //Ajouter
     didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [FIRApp configure];
   [GeneratedPluginRegistrant registerWithRegistry:self];

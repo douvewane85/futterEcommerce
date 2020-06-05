@@ -156,13 +156,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.1"
-  google_sign_in:
-    dependency: "direct main"
-    description:
-      name: google_sign_in
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.3.0+1"
   http:
     dependency: transitive
     description:
@@ -233,13 +226,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
-  provider:
-    dependency: "direct main"
-    description:
-      name: provider
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.2.0"
   quiver:
     dependency: transitive
     description:

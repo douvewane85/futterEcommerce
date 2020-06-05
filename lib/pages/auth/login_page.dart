@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce/models/user-model.dart';
-import 'package:flutter_ecommerce/pages/inscription-page.dart';
+import 'package:flutter_ecommerce/pages/auth/inscription-page.dart';
 import 'package:flutter_ecommerce/services/auth-service.dart';
 import 'package:flutter_ecommerce/shared/loading.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'package:flutter_ecommerce/home.dart';
+import 'package:flutter_ecommerce/pages/home/home.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -20,8 +15,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
 
   bool loading=false;
-  bool isLogedIn=false;
   String error="";
+  SharedPreferences preferences;
 
 final AuthService _auth=AuthService();
 
@@ -32,7 +27,45 @@ final AuthService _auth=AuthService();
     //isConnectAnnonyme();
   }
 
+ Future  handleIsConnect() async{
 
+   setState(() {
+     loading=true;
+   });
+     preferences = await SharedPreferences.getInstance();
+
+   User result=await _auth.ConnexionUser(email, pwd);
+
+   if(result==null){
+     setState(() {
+       error="Email ou Mot de Passe Incorrect";
+
+     });
+
+   }else{
+       //
+
+        await preferences.setString("id", result.uid );
+        await preferences.setString("login", result.login);
+        await preferences.setString("pwd", result.pwd);
+        await preferences.setString("adresse", result.adresse);
+        await preferences.setString("fullName", result.fullName);
+        await preferences.setString("avatar", result.avatar);
+        Navigator.pushReplacement(context,
+         MaterialPageRoute(
+             builder: (context) => new MyHomePage(title: "Kay Djeunde",)
+         )
+     );
+   }
+
+   setState(() {
+        loading=false;
+   });
+
+
+  }
+
+/*
   void isConnectAnnonyme() async{
     setState(() {
       loading=true;
@@ -43,8 +76,6 @@ final AuthService _auth=AuthService();
     this.isLogedIn=result!=null;
 
     if(isLogedIn){
-      print("OK");
-      print(result.uid);
       Fluttertoast.showToast(msg: "Connexion reussie");
       Navigator.pushReplacement(context,
           MaterialPageRoute(
@@ -61,10 +92,10 @@ final AuthService _auth=AuthService();
       loading=false;
     });
 
-
-
-
   }
+
+
+ */
 
   String  email;
   String  pwd;
@@ -72,7 +103,7 @@ final AuthService _auth=AuthService();
   final _formKey=GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    return isLogedIn? LoadingWidget() :Scaffold(
+    return loading? LoadingWidget() :Scaffold(
 
         appBar: AppBar(
         elevation: 0.1,
@@ -136,27 +167,11 @@ final AuthService _auth=AuthService();
                   color:Colors.red[500],
                   onPressed: ()async{
                     if(_formKey.currentState.validate()){
-                      setState(() {
-                        isLogedIn=true;
-                      });
-                      User result=await _auth.ConnexionUser(email, pwd);
-                      if(result==null){
-                        setState(() {
-                          error="Email ou Mot de Passe Incorrect";
-                          isLogedIn=false;
-                        });
-
-                      }else{
-                        Navigator.push(context,
-                            MaterialPageRoute(
-                                builder: (context) => new MyHomePage(title: "Kay Djeunde",)
-                            )
-                        );
-                      }
+                         await handleIsConnect();
                     }
 
                   },
-                  child: Text("Inscription",
+                  child: Text("Connexion",
                       style:TextStyle(
                         color: Colors.white,
                         fontSize: 14.0,

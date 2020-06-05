@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ecommerce/pages/login_page.dart';
-import 'home.dart';
+import 'package:flutter_ecommerce/pages/auth/login_page.dart';
+import 'pages/home/home.dart';
 
 void main() => runApp(MyApp());
 

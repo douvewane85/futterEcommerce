@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 //Mes Packadges
 
-import 'package:flutter_ecommerce/home.dart';
-import 'package:flutter_ecommerce/components/gridView_products.dart';
+import 'package:flutter_ecommerce/pages/home/home.dart';
+import 'package:flutter_ecommerce/components/product/gridView_products.dart';
 
 class PageDetailsProduct extends StatefulWidget {
   final String product_details_name;

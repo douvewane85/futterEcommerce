@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 //Mes Importation
-import 'package:flutter_ecommerce/pages/product_details.dart';
+import 'package:flutter_ecommerce/pages/product/product_details.dart';
+import 'package:flutter_ecommerce/services/products-service.dart';
 
 class ListProduct extends StatefulWidget {
   @override
@@ -12,6 +13,7 @@ class _ListProductState extends State<ListProduct> {
   /*
 
    */
+  ProductService service=new ProductService();
   var product_list=[
     {
       "name":"Blazer",
@@ -72,22 +74,44 @@ class _ListProductState extends State<ListProduct> {
     }
 
 
-
-
   ];
-  @override
-  Widget build(BuildContext context) {
+
+  Widget createProductsListView(BuildContext context, AsyncSnapshot snapshot) {
+    var values = snapshot.data;
     return GridView.builder(
-        itemCount:product_list.length ,
+        itemCount:values == null ? 0 : values.length ,
         gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         itemBuilder: (BuildContext context, int index){
           return SingleProduct(
-            product_name:product_list[index]['name'],
-            product_picture:product_list[index]['picture'],
-            product_old_price:product_list[index]['old_price'],
-            product_price:product_list[index]['price'],
+            product_name:values[index].product_name,
+            product_picture:values[index].product_picture,
+            product_old_price:values[index].product_old_price,
+            product_price:values[index].product_price,
           );
         }
+    );
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 320.0,
+      child: FutureBuilder(
+          future: service.products(),
+          initialData: [
+
+          ],
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+
+              return createProductsListView(context, snapshot);
+
+            }
+            return CircularProgressIndicator();
+
+          }
+      ),
     );
   }
 

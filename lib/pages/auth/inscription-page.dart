@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce/models/categorie-model.dart';
 import 'package:flutter_ecommerce/models/user-model.dart';
-import 'package:flutter_ecommerce/pages/login_page.dart';
+import 'package:flutter_ecommerce/pages/auth/login_page.dart';
+import 'package:flutter_ecommerce/pages/home/home.dart';
 import 'package:flutter_ecommerce/services/auth-service.dart';
+import 'package:flutter_ecommerce/services/categorie-service.dart';
+import 'package:flutter_ecommerce/shared/loading.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Inscription extends StatefulWidget {
   @override
@@ -13,6 +18,8 @@ class _InscriptionState extends State<Inscription> {
   String  email='';
   String  pwd='';
   String error="";
+  bool loading=false;
+  SharedPreferences preferences;
 
   final AuthService _auth=AuthService();
 
@@ -20,8 +27,48 @@ class _InscriptionState extends State<Inscription> {
   final _formKey=GlobalKey<FormState>();
 
 
+
+  //Fonction de connexion
+  Future  handleIsConnect() async{
+
+    setState(() {
+      loading=true;
+    });
+    preferences = await SharedPreferences.getInstance();
+
+    User result=await _auth.ConnexionUser(email, pwd);
+
+    if(result==null){
+      setState(() {
+        error="Email ou Mot de Passe Incorrect";
+
+      });
+
+    }else{
+      //
+      await preferences.setString("id", result.uid );
+      preferences.setString("login", result.login);
+      preferences.setString("pwd", result.pwd);
+      preferences.setString("adresse", result.adresse);
+      preferences.setString("fullName", result.fullName);
+      preferences.setString("avatar", result.avatar);
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(
+              builder: (context) => new MyHomePage(title: "Kay Djeunde",)
+          )
+      );
+    }
+
+    setState(() {
+      loading=false;
+    });
+
+
+  }
+
+
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return  loading? LoadingWidget() :Scaffold(
 
       appBar: AppBar(
         elevation: 0.1,
@@ -62,6 +109,15 @@ class _InscriptionState extends State<Inscription> {
             children: <Widget>[
               SizedBox(height: 20.0,),
               TextFormField(
+                decoration: InputDecoration(
+                  //labelText: "Login *",
+                 hintText: "Email *",
+                  icon: Icon(Icons.email),
+                  hintStyle: TextStyle(
+                    color:Colors.red
+                  )
+                ),
+                keyboardType: TextInputType.emailAddress,
                 validator: (value)=>value.isEmpty ? "Entrer le Email":null,
                 onChanged: (value){
                   setState(() {
@@ -71,12 +127,26 @@ class _InscriptionState extends State<Inscription> {
                 },
               ),
               SizedBox(height: 20.0,),
-              TextFormField(
-                validator: (value)=>value.length<6 ? "Le Mot de Passe doit contenir au moins 6 caracteres":null,
-                obscureText: true,
-                onChanged: (value){
-                    setState(() =>pwd=value);
-                },
+              Material(
+                borderRadius: BorderRadius.circular(40.0),
+                elevation: 0.0,
+                child: TextFormField(
+                    decoration: InputDecoration(
+                        //labelText: "Mot de Passe *"
+                        hintText: "Mot de Passe *",
+                        border: OutlineInputBorder(),
+                        hintStyle: TextStyle(
+                            color:Colors.red
+                        ),
+                        icon: Icon(Icons.lock_outline)
+                    ),
+
+                  validator: (value)=>value.length<6 ? "Le Mot de Passe doit contenir au moins 6 caracteres":null,
+                  obscureText: true,
+                  onChanged: (value){
+                      setState(() =>pwd=value);
+                  },
+                ),
               ),
               SizedBox(height: 20.0,),
               Padding(
@@ -85,13 +155,25 @@ class _InscriptionState extends State<Inscription> {
                   color:Colors.red[500],
                   onPressed: ()async{
                     if(_formKey.currentState.validate()){
-                      User result=await _auth.inscriptionUser(email, pwd);
+                      setState(() {
+                        loading=true;
+                      });
+                         User result=await _auth.inscriptionUser(email, pwd,"Diop","Thies");
+
                        if(result==null){
                          setState(() {
                            error="Email ou Mot de Passe Incorrect";
                          });
 
+                       }else{
+                         await handleIsConnect();
+                         setState(() {
+                           error="";
+                         });
                        }
+                      setState(() {
+                        loading=false;
+                      });
                     }
 
                   },

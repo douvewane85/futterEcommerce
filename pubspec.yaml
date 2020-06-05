@@ -14,7 +14,7 @@ description: Demo Application de Ecommerce
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
@@ -22,8 +22,8 @@ dependencies:
   carousel_pro: ^1.0.0
   firebase_auth: ^0.16.1
   cloud_firestore: 0.12.11
-  provider: ^3.1.0
-  google_sign_in: ^3.2.4
+  #provider: ^3.1.0
+  #google_sign_in: ^3.2.4
   shared_preferences: ^0.4.3
   fluttertoast: ^4.0.0
   flutter_spinkit: "^4.0.0"
@@ -55,6 +55,7 @@ flutter:
   #  - images/a_dot_ham.jpeg
   assets:
     - images/c1.jpg
+    - images/avatar.jpeg
     - images/m1.jpeg
     - images/m2.jpg
     - images/w1.jpeg
